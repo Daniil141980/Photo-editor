@@ -8,11 +8,15 @@ import ru.daniil.photoeditor.exceptions.AlreadyExistException;
 import ru.daniil.photoeditor.exceptions.NotFoundException;
 import ru.daniil.photoeditor.repositories.users.UserRepository;
 import ru.daniil.photoeditor.services.UserService;
+
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserServiceTest {
     @Test
