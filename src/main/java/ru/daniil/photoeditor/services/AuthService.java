@@ -53,8 +53,8 @@ public class AuthService {
             throw new BadTokenException("Bad token, refresh token not found");
         }
         var user = userService.loadUserById(pairIdAndUserId.get().getSecond());
-        return Pair.of(tokenRepository.updateToken(pairIdAndUserId.get().getFirst(), jwtService.generateRefreshToken(user)),
-                jwtService.generateAccessToken(user));
+        return Pair.of(tokenRepository.updateToken(pairIdAndUserId.get().getFirst(),
+                jwtService.generateRefreshToken(user)), jwtService.generateAccessToken(user));
     }
 
     @Transactional

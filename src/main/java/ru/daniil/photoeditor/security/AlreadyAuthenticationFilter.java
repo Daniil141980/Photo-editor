@@ -16,10 +16,13 @@ import java.io.IOException;
 public class AlreadyAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() &&
-                (request.getRequestURI().equals("/api/v1/auth/login") || request.getRequestURI().equals("/api/v1/auth/register"))) {
+        if (authentication != null && authentication.isAuthenticated()
+                && (request.getRequestURI().equals("/api/v1/auth/login")
+                || request.getRequestURI().equals("/api/v1/auth/register"))) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Вы уже аутентифицированы");
             return;
         }

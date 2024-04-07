@@ -43,7 +43,8 @@ public class SecurityConfig {
                         .requestMatchers(AUTH_WHITE_LIST).permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(managementConfigurer -> managementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(managementConfigurer ->
+                        managementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(alreadyAuthenticationFilter, JwtAuthenticationFilter.class)
@@ -53,7 +54,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder bCryptPasswordEncoder() {
+    public PasswordEncoder cryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
