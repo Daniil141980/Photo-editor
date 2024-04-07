@@ -50,7 +50,7 @@ jobs:
       - name: Run OpenAPI Diff
         uses: docker://openapitools/openapi-diff:latest
         with:
-          args: --fail-on-incompatible openapi.yaml build/openapi.json --markdown ./openapi-diff-report.md
+          args: --fail-on-incompatible openapi.yaml target/openapi.json --markdown ./openapi-diff-report.md
       - name: Read file content
         id: read-file
         run: |
