@@ -15,8 +15,8 @@ spring:
       path: /api/v1
 
 storage:
-  url: http://localhost:9000
-  port: 9000
+  url: http://localhost:9002
+  port: 9002
   accessKey: user
   secretKey: password
   secure: false

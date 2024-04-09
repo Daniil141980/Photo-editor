@@ -1,19 +1,19 @@
 version: "3"
 services:
-  app:
-    image: application:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres-db
-      - minio
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/images_db
-      - STORAGE_PORT=9000
-      - STORAGE_URL=http://minio:9000
+#  app:
+#    image: application:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - postgres-db
+#      - minio
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/images_db
+#      - STORAGE_PORT=9000
+#      - STORAGE_URL=http://minio:9000
 
   postgres-db:
     image: postgres:14.5-alpine
@@ -37,10 +37,14 @@ services:
       MINIO_ROOT_PASSWORD: password
     volumes:
       - minio-data:/data
+    command: "server /data"
+    healthcheck:
+      test: timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1
+      interval: 5s
+      retries: 1
+      timeout: 5s
     ports:
-      - "9000:9000"
-      - "9001:9001"
-    command: server /data --console-address :9001
+      - '9002:9000'
 
 volumes:
   images-db:

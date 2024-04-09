@@ -33,7 +33,8 @@ public class UserService implements UserDetailsService {
     }
 
     public UserEntity loadCurrentUser() {
-        return loadUserByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+        return loadUserByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .getUsername());
     }
 
     public UserEntity loadUserById(Long id) {

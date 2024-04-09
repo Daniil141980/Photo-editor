@@ -1,0 +1,119 @@
+name: tests
+on: [ pull_request ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+      - name: maven build
+        run: mvn clean compile
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+      - run: mvn checkstyle:check
+  openapi-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+      - name: Generate OpenAPI specs
+        run: mvn verify
+      - name: Run OpenAPI Diff
+        uses: docker://openapitools/openapi-diff:latest
+        with:
+          args: --fail-on-incompatible openapi.yaml target/openapi.json --markdown ./openapi-diff-report.md
+      - name: Read file content
+        id: read-file
+        run: |
+          echo "::set-output name=content::$(cat openapi-diff-report.md)"
+      - name: Create OpenAPI DIff Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const prefix = "## OpenAPI difference report";
+            let content = fs.readFileSync('openapi-diff-report.md', 'utf8');
+            content = prefix + "\n" + content;
+            const comments = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const existingComment = comments.data.find(comment => comment.body.startsWith(prefix));
+            if (!!existingComment) {
+              await github.rest.issues.updateComment({
+                comment_id: existingComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: content
+              });
+            } else {
+              core.info('No existing comment found. Creating a new one.');
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: content
+              });
+            }
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+      - name: Execute Maven Test
+        run: mvn clean install
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 50
+          min-coverage-changed-files: 50
+          update-comment: true
+          title: "Jacoco Report"
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [ build, checkstyle, openapi-diff, unit-tests ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get the version
+        id: vars
+        run: echo ::set-output name=tag::$(echo ${GITHUB_SHA:10})
+      - name: Docker login
+        env:
+          DOCKER_USERNAME: ${{secrets.dockerhub_username}}
+          DOCKER_PASSWORD: ${{secrets.dockerhub_password}}
+        run: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" docker.io
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{secrets.dockerhub_username}}/${{secrets.dockerhub_repo_name}}:${{steps.vars.outputs.tag}}
+      - name: Publish dockerimage to docker hub
+        run: docker push ${{secrets.dockerhub_username}}/${{secrets.dockerhub_repo_name}}:${{steps.vars.outputs.tag}}
+      - name: Build Docker image with latest tag
+        run: docker build . --file Dockerfile --tag ${{secrets.dockerhub_username}}/${{secrets.dockerhub_repo_name}}:latest
+      - name: Publish dockerimage to docker hub
+        run: docker push ${{secrets.dockerhub_username}}/${{secrets.dockerhub_repo_name}}:latest

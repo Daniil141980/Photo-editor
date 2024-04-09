@@ -16,9 +16,12 @@ import java.io.IOException;
 public class NotAuthenticationLogOutFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if ((authentication == null || !authentication.isAuthenticated()) && request.getRequestURI().equals("/api/v1/auth/logout")) {
+        if ((authentication == null || !authentication.isAuthenticated())
+                && request.getRequestURI().equals("/api/v1/auth/logout")) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Вы ещё не аутентифицированы");
             return;
         }

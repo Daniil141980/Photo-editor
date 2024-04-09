@@ -1,6 +1,11 @@
 package ru.daniil.photoeditor.services;
 
-import io.minio.*;
+import io.minio.BucketExistsArgs;
+import io.minio.GetObjectArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,7 +42,9 @@ public class MinioStorageService implements StorageService {
                     PutObjectArgs.builder()
                             .bucket(properties.getBucket())
                             .object(fileId.toString())
-                            .stream(new ByteArrayInputStream(file.getBytes()), file.getSize(), properties.getImageSize())
+                            .stream(new ByteArrayInputStream(file.getBytes()),
+                                    file.getSize(),
+                                    properties.getImageSize())
                             .contentType(file.getContentType())
                             .build()
             );
