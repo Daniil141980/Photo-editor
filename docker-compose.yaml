@@ -1,0 +1,47 @@
+version: "3"
+services:
+  app:
+    image: application:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+      - minio
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/images_db
+      - STORAGE_PORT=9000
+      - STORAGE_URL=http://minio:9000
+
+  postgres-db:
+    image: postgres:14.5-alpine
+    container_name: images_db
+    environment:
+      POSTGRES_DB: "images_db"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - images-db:/var/lib/postgresql/data
+    ports:
+      - "15432:5432"
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: user
+      MINIO_ROOT_PASSWORD: password
+    volumes:
+      - minio-data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address :9001
+
+volumes:
+  images-db:
+  minio-data:
