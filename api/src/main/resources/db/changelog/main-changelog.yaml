@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - include:
+      file: './2024/03/26-01-create-table-users-and-tokens.sql'
+      relativeToChangelogFile: true
+  - include:
+      file: './2024/03/26-02-create-table-images.sql'
+      relativeToChangelogFile: true
+  - include:

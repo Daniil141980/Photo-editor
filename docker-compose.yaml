@@ -14,6 +14,20 @@ services:
 #      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/images_db
 #      - STORAGE_PORT=9000
 #      - STORAGE_URL=http://minio:9000
+  api:
+    image: api:latest
+    build:
+      context: api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+      - minio
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/images_db
+      - STORAGE_PORT=9000
+      - STORAGE_URL=http://minio:9000
 
   postgres-db:
     image: postgres:14.5-alpine
