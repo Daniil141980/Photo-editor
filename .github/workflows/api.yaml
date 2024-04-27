@@ -39,6 +39,8 @@ jobs:
           distribution: temurin
           cache: maven
       - name: Generate OpenAPI specs
+        env:
+          SPRING_DOCKER_COMPOSE_ENABLED: true
         run: mvn -pl api -am verify
       - name: Run OpenAPI Diff
         uses: docker://openapitools/openapi-diff:latest
@@ -85,7 +87,7 @@ jobs:
           distribution: temurin
           cache: maven
       - name: Execute Maven Test
-        run: mvn -pl api -am clean install
+        run: mvn -pl api -am clean package
       - name: Add coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
