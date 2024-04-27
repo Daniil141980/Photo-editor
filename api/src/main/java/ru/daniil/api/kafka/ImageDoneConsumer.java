@@ -33,8 +33,12 @@ public class ImageDoneConsumer {
             autoCreateTopics = "false",
             include = SocketTimeoutException.class, exclude = NullPointerException.class)
     public void consume(ImageDoneDto imageDoneDto, Acknowledgment acknowledgment) {
-        requestService.updateRequest(imageDoneDto.requestId(), imageDoneDto.imageId());
-        acknowledgment.acknowledge();
+        try {
+            requestService.updateRequest(imageDoneDto.requestId(), imageDoneDto.imageId());
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Failed to consume", e);
+        }
     }
 
 
