@@ -1,0 +1,31 @@
+version: "3"
+services:
+#  worker:
+#    image: worker:latest
+#    build:
+#      context: worker
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8090:8090"
+#    depends_on:
+#      - api
+#    environment:
+#      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka-1:29092, kafka-2:29093, kafka-3:29094
+
+  postgres-db:
+    image: postgres:14.5-alpine
+    container_name: processors_db
+    environment:
+      POSTGRES_DB: "processors_db"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - processors-db:/var/lib/postgresql/data
+    ports:
+      - "15433:5432"
+
+
+volumes:
+  processors-db:

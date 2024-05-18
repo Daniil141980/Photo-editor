@@ -25,7 +25,7 @@ spring:
       sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";
   docker:
     compose:
-      enabled: true
+      enabled: false
 storage:
   url: http://localhost:9002
   port: 9002
@@ -43,10 +43,10 @@ app:
   images:
     wip:
       topic: images.wip
-      partitions: 1
+      partitions: 3
       replicas: 3
     done:
       topic: images.done
-      partitions: 1
+      partitions: 2
       replicas: 3
       group-id: group.images.done

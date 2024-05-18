@@ -1,4 +1,11 @@
 spring:
+  datasource:
+    url: 'jdbc:postgresql://localhost:15433/processors_db'
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:db/changelog/main-changelog.yaml
   kafka:
     listener.ack-mode: manual
     bootstrap-servers:
@@ -10,11 +17,23 @@ spring:
       sasl.mechanism: PLAIN
       sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";
 
+storage:
+  url: http://localhost:9002
+  port: 9002
+  accessKey: user
+  secretKey: password
+  secure: false
+  bucket: minio-storage
+  image-size: 10485760 #10 Mb
+
 app:
   images:
     wip:
       topic: images.wip
-      partitions: 1
+      partitions: 3
       group-id: group.images.wip
     done:
       topic: images.done
+
+filter:
+  type: "KUWAHARA"
