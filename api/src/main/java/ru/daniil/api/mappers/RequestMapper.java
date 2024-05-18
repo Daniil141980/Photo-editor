@@ -8,6 +8,6 @@ import ru.daniil.api.dto.filter.GetModifiedImageByRequestIdResponseDto;
 @Mapper(componentModel = "spring")
 public interface RequestMapper {
     @Mapping(target = "imageId", expression = "java(requestEntity.imageModifiedId() != null ?"
-             + " requestEntity.imageModifiedId() : requestEntity.imageId())")
+            + " requestEntity.imageModifiedId() : requestEntity.imageId())")
     GetModifiedImageByRequestIdResponseDto toGetModifiedImageByRequestIdResponseDto(RequestEntity requestEntity);
 }

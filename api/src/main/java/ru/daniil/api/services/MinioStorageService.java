@@ -6,6 +6,7 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.StatObjectArgs;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -64,6 +65,20 @@ public class MinioStorageService implements StorageService {
                             .build()).readAllBytes());
         } catch (Exception e) {
             throw new NotFoundException("Could not read file: " + fileId);
+        }
+    }
+
+    @Override
+    public Long getSize(String fileId) {
+        try {
+            return client.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(properties.getBucket())
+                            .object(fileId)
+                            .build()
+            ).size();
+        } catch (Exception e) {
+            throw new NotFoundException("Could not get size: " + fileId);
         }
     }
 
