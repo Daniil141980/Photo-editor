@@ -1,4 +1,4 @@
-package ru.daniil.worker.kafka;
+package ru.daniil.worker.kafka.done;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
