@@ -55,11 +55,16 @@ public class ImageFiltersController {
                                                           @RequestBody
                                                           @Valid
                                                           List<FiltersAndParamsRequestDto> filters) {
-        var linkedHash = new LinkedHashMap<FilterType, ProcessorParams>();
-        linkedHash.put(FilterType.valueOf(filters.get(0).filter()), filters.getFirst().processorParams());
+        var mapFiltersAndParams = getMapFromListFilters(filters);
+        return new ApplyImageFiltersResponseDto(requestService.saveRequest(imageId, mapFiltersAndParams));
+    }
 
-        return new ApplyImageFiltersResponseDto(requestService.saveRequest(imageId, linkedHash
-        ));
+    private LinkedHashMap<FilterType, ProcessorParams> getMapFromListFilters(List<FiltersAndParamsRequestDto> filters) {
+        var linkedHashMap = new LinkedHashMap<FilterType, ProcessorParams>();
+        for (var filter : filters) {
+            linkedHashMap.put(FilterType.valueOf(filter.filter()), filter.processorParams());
+        }
+        return linkedHashMap;
     }
 
     @ApiResponses({

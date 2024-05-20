@@ -1,4 +1,9 @@
 package ru.daniil.api.dto.processorparams;
 
-public record KuwaharaParams(Integer size) implements ProcessorParams {
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+public record KuwaharaParams(@NotNull
+                             @Size(min = 1)
+                             Integer size) implements ProcessorParams {
 }

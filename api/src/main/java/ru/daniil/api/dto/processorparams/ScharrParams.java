@@ -1,4 +1,7 @@
 package ru.daniil.api.dto.processorparams;
 
-public record ScharrParams(String type) implements ProcessorParams {
+import jakarta.validation.constraints.NotBlank;
+
+public record ScharrParams(@NotBlank
+                           String type) implements ProcessorParams {
 }

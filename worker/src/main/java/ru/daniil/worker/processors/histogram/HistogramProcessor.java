@@ -59,10 +59,10 @@ public class HistogramProcessor implements Processor {
         long sumB = 0;
         var size2 = 255;
 
-        var scaleFactor = (float) (size2 / (bufferedImage.getWidth() * bufferedImage.getHeight()));
+        var scaleFactor = (float) (255.0 / (bufferedImage.getWidth() * bufferedImage.getHeight()));
 
         for (var i = 0; i < redHistogram.length; i++) {
-            sumR += imageHist.getFirst()[i];
+            sumR += imageHist.get(0)[i];
             redHistogram[i] = Math.min((int) (sumR * scaleFactor), size2);
 
             sumG += imageHist.get(1)[i];

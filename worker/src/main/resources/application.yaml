@@ -36,4 +36,4 @@ app:
       topic: images.done
 
 filter:
-  type: "KUWAHARA"
+  type: "SCHARR"

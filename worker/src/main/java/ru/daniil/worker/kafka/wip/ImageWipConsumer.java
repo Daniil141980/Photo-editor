@@ -39,7 +39,7 @@ public class ImageWipConsumer {
             attempts = "5",
             autoCreateTopics = "false",
             include = SocketTimeoutException.class, exclude = NullPointerException.class)
-    public void consume(ImageWipDto imageWipDto, Acknowledgment acknowledgment) throws InterruptedException {
+    public void consume(ImageWipDto imageWipDto, Acknowledgment acknowledgment) {
         log.info(imageWipDto.toString());
 
         if (imageWipDto.filters().isEmpty()) {
