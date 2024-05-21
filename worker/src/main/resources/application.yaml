@@ -25,7 +25,7 @@ storage:
   secure: false
   bucket: minio-storage
   image-size: 10485760 #10 Mb
-  ttl: 1 #1 day
+  ttl: 15 #15 minutes
 
 app:
   images:
@@ -38,4 +38,4 @@ app:
       topic: images.done
 
 filter:
-  type: "SCHARR"
+  type: "HISTOGRAM"

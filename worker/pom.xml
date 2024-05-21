@@ -24,7 +24,7 @@
         <checkstyle.version>10.12.7</checkstyle.version>
         <postgresql.version>42.6.0</postgresql.version>
         <liquibase.version>4.22.0</liquibase.version>
-        <minio.version>8.5.8</minio.version>
+        <minio.version>8.3.4</minio.version>
     </properties>
     <dependencies>
         <dependency>

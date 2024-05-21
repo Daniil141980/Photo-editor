@@ -10,7 +10,7 @@ public interface StorageService {
 
     void init();
 
-    UUID store(BufferedImage image, String contentType);
+    UUID store(BufferedImage image, String contentType, Boolean withTtl);
 
     Pair<BufferedImage, String> loadImageAndContentType(String fileId);
 

@@ -2,6 +2,7 @@ package ru.daniil.worker.services;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
+import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -11,6 +12,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.util.Pair;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.daniil.worker.config.StorageProperties;
 import ru.daniil.worker.exceptions.NotFoundException;
@@ -20,6 +22,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 import javax.imageio.ImageIO;
@@ -33,7 +38,7 @@ public class MinioStorageService implements StorageService {
 
     @Override
     @SneakyThrows
-    public UUID store(BufferedImage image, String contentType) {
+    public UUID store(BufferedImage image, String contentType, Boolean withTtl) {
         try {
             if (image == null) {
                 throw new StorageException("Failed to store empty file.");
@@ -47,6 +52,11 @@ public class MinioStorageService implements StorageService {
             }
 
             var fileId = UUID.randomUUID();
+            var metadata = new HashMap<String, String>();
+            if (withTtl) {
+                var expirationDate = Instant.now().plus(properties.getTtl(), ChronoUnit.MINUTES);
+                metadata.put("X-Amz-Meta-Expiration-Date", expirationDate.toString());
+            }
             client.putObject(
                     PutObjectArgs.builder()
                             .bucket(properties.getBucket())
@@ -55,11 +65,42 @@ public class MinioStorageService implements StorageService {
                                     imageBytes.length,
                                     properties.getImageSize())
                             .contentType(contentType)
+                            .userMetadata(metadata)
                             .build()
             );
             return fileId;
         } catch (IOException e) {
             throw new StorageException("Failed to store file.", e);
+        }
+    }
+
+    @Scheduled(cron = "0 */15 * * * ?")
+    public void removeExpiredFiles() {
+        try {
+            var objects = client.listObjects(
+                    ListObjectsArgs.builder()
+                            .bucket(properties.getBucket())
+                            .build()
+            );
+
+            for (var result : objects) {
+                var item = result.get();
+                var metadata = client.statObject(
+                        StatObjectArgs.builder()
+                                .bucket(properties.getBucket())
+                                .object(item.objectName())
+                                .build()
+                ).userMetadata();
+
+                if (metadata.containsKey("expiration-date")) {
+                    var expirationDate = Instant.parse(metadata.get("expiration-date"));
+                    if (Instant.now().isAfter(expirationDate)) {
+                        remove(item.objectName());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new StorageException("Failed to scheduled", e);
         }
     }
 

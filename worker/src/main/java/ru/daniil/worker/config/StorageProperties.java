@@ -17,4 +17,5 @@ public class StorageProperties {
     private Boolean secure;
     private String bucket;
     private Long imageSize;
+    private Integer ttl;
 }
