@@ -30,7 +30,7 @@ public class ProcessorsService {
         var newImageId = storageService.store(newImage, oldImage.getSecond());
 
         processorsCheckService.save(new ProcessorsCheckEntity(
-                newImageId, imageWipDto.requestId(), processorEntry.getKey()));
+                imageWipDto.imageId(), imageWipDto.requestId(), processorEntry.getKey()));
 
         if (imageWipDto.filters().isEmpty()) {
             sendMessageToImageDone(imageWipDto.requestId(), newImageId);

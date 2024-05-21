@@ -7,6 +7,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.RoundRobinPartitioner;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,12 +30,14 @@ import java.util.function.Consumer;
 public class KafkaInitializer {
 
     private final KafkaProperties properties;
+    @Value("${app.images.wip.transactional-id}")
+    private String transactionalId;
 
     @Bean
     public KafkaTemplate<String, Object> transactionalKafkaTemplate() {
         return new KafkaTemplate<>(producerFactory(props -> {
             props.put(ProducerConfig.ACKS_CONFIG, "all");
-            props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "custom-transactional-worker");
+            props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionalId);
         }));
     }
 

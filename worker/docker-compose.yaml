@@ -1,16 +1,84 @@
 version: "3"
 services:
-#  worker:
-#    image: worker:latest
-#    build:
-#      context: worker
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8090:8090"
-#    depends_on:
-#      - api
-#    environment:
-#      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka-1:29092, kafka-2:29093, kafka-3:29094
+  worker-KUWAHARA:
+    image: worker:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    depends_on:
+      - postgres-db
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka-1:29092, kafka-2:29093, kafka-3:29094
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/processors_db
+      - FILTER_TYPE=KUWAHARA
+      - STORAGE_PORT=9000
+      - STORAGE_URL=http://minio:9000
+      - APP_IMAGES_WIP_GROUP-ID=group.images.wip.kuwahara
+      - APP_IMAGES_WIP_TRANSACTIONAL-ID=custom-transactional-kuwahara
+    networks:
+      - shared-network
+
+  worker-HISTOGRAM:
+    image: worker:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8091"
+    depends_on:
+      - postgres-db
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka-1:29092, kafka-2:29093, kafka-3:29094
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/processors_db
+      - FILTER_TYPE=HISTOGRAM
+      - STORAGE_PORT=9000
+      - STORAGE_URL=http://minio:9000
+      - APP_IMAGES_WIP_GROUP-ID=group.images.wip.histogram
+      - APP_IMAGES_WIP_TRANSACTIONAL-ID=custom-transactional-histogram
+    networks:
+      - shared-network
+
+  worker-SCHARR:
+    image: worker:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8092:8092"
+    depends_on:
+      - postgres-db
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka-1:29092, kafka-2:29093, kafka-3:29094
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/processors_db
+      - FILTER_TYPE=SCHARR
+      - STORAGE_PORT=9000
+      - STORAGE_URL=http://minio:9000
+      - APP_IMAGES_WIP_GROUP-ID=group.images.wip.scharr
+      - APP_IMAGES_WIP_TRANSACTIONAL-ID=custom-transactional-scharr
+    networks:
+      - shared-network
+
+  worker-SEAM_CARVER:
+    image: worker:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8093:8093"
+    depends_on:
+      - postgres-db
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka-1:29092, kafka-2:29093, kafka-3:29094
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db/processors_db
+      - FILTER_TYPE=SEAM_CARVER
+      - STORAGE_PORT=9000
+      - STORAGE_URL=http://minio:9000
+      - APP_IMAGES_WIP_GROUP-ID=group.images.wip.seam
+      - APP_IMAGES_WIP_TRANSACTIONAL-ID=custom-transactional-seam
+    networks:
+      - shared-network
 
   postgres-db:
     image: postgres:14.5-alpine
@@ -25,7 +93,13 @@ services:
       - processors-db:/var/lib/postgresql/data
     ports:
       - "15433:5432"
+    networks:
+      - shared-network
 
 
 volumes:
   processors-db:
+
+networks:
+  shared-network:
+    external: true

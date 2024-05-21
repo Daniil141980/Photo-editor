@@ -25,6 +25,7 @@ storage:
   secure: false
   bucket: minio-storage
   image-size: 10485760 #10 Mb
+  ttl: 1 #1 day
 
 app:
   images:
@@ -32,6 +33,7 @@ app:
       topic: images.wip
       partitions: 3
       group-id: group.images.wip
+      transactional-id: custom-transactional-scharr
     done:
       topic: images.done
 
