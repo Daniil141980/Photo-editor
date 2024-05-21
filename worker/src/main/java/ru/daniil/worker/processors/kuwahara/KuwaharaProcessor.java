@@ -10,6 +10,9 @@ import ru.daniil.worker.processors.Processor;
 import ru.daniil.worker.processors.ProcessorParams;
 
 import java.awt.image.BufferedImage;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 @Component
 @ConditionalOnProperty(prefix = "filter", name = "type", havingValue = "KUWAHARA")
@@ -28,16 +31,43 @@ public class KuwaharaProcessor implements Processor {
         var b = new byte[size];
 
         colorProcessor.getRGB(r, g, b);
-        var red = new ByteProcessor(width, height, r, null);
-        filter(red, kuwaharaParams.size());
 
-        var green = new ByteProcessor(width, height, g, null);
-        filter(green, kuwaharaParams.size());
+        var executor = Executors.newFixedThreadPool(3);
 
-        var blue = new ByteProcessor(width, height, b, null);
-        filter(blue, kuwaharaParams.size());
+        Callable<ByteProcessor> redTask = () -> {
+            var red = new ByteProcessor(width, height, r, null);
+            filter(red, kuwaharaParams.size());
+            return red;
+        };
 
-        colorProcessor.setRGB((byte[]) red.getPixels(), (byte[]) green.getPixels(), (byte[]) blue.getPixels());
+        Callable<ByteProcessor> greenTask = () -> {
+            var green = new ByteProcessor(width, height, g, null);
+            filter(green, kuwaharaParams.size());
+            return green;
+        };
+
+        Callable<ByteProcessor> blueTask = () -> {
+            var blue = new ByteProcessor(width, height, b, null);
+            filter(blue, kuwaharaParams.size());
+            return blue;
+        };
+
+        var redFuture = executor.submit(redTask);
+        var greenFuture = executor.submit(greenTask);
+        var blueFuture = executor.submit(blueTask);
+
+        try {
+            var red = redFuture.get();
+            var green = greenFuture.get();
+            var blue = blueFuture.get();
+
+            colorProcessor.setRGB((byte[]) red.getPixels(), (byte[]) green.getPixels(), (byte[]) blue.getPixels());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            executor.shutdown();
+        }
+
         return colorProcessor.getBufferedImage();
     }
 
