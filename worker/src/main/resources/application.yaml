@@ -38,4 +38,11 @@ app:
       topic: images.done
 
 filter:
-  type: "HISTOGRAM"
+  type: "IMAGGA"
+
+api:
+  key: acc_2ce44f273f71452
+  secret: a75b7c2e4c16a8c693b6b4c0d95a945a
+
+server:
+  port: 8090
