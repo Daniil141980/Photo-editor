@@ -1,5 +1,8 @@
 package ru.daniil.worker.processors.imagga;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
@@ -15,6 +18,9 @@ import ru.daniil.worker.dto.imagga.upload.ImageUploadResponseDto;
 public class ImaggaController {
     private final WebClient webClient;
 
+    @Retry(name = "customRetry")
+    @CircuitBreaker(name = "customCircuitBreaker")
+    @RateLimiter(name = "customRateLimiter")
     public ImageUploadResponseDto postImage(Resource resource) {
         return webClient
                 .post()
@@ -25,6 +31,9 @@ public class ImaggaController {
                 .block();
     }
 
+    @Retry(name = "customRetry")
+    @CircuitBreaker(name = "customCircuitBreaker")
+    @RateLimiter(name = "customRateLimiter")
     public ImageTagsResponseDto getTags(String uploadId) {
         return webClient
                 .get()
