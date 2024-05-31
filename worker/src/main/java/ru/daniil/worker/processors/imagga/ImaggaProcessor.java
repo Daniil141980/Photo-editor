@@ -8,7 +8,9 @@ import ru.daniil.worker.dto.imagga.tag.TagsDto;
 import ru.daniil.worker.processors.Processor;
 import ru.daniil.worker.processors.ProcessorParams;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
