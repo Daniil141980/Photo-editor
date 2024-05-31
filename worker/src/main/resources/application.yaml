@@ -38,4 +38,38 @@ app:
       topic: images.done
 
 filter:
-  type: "HISTOGRAM"
+  type: "IMAGGA"
+
+api:
+  key: acc_2ce44f273f71452
+  secret: a75b7c2e4c16a8c693b6b4c0d95a945a
+
+server:
+  port: 8090
+
+resilience4j:
+  ratelimiter:
+    instances:
+      customRateLimiter:
+        limitForPeriod: 4
+        limitRefreshPeriod: 60s
+        timeoutDuration: 10s
+  retry:
+    instances:
+      customRetry:
+        max-attempts: 3
+        wait-duration: 1s
+        retry-exceptions:
+          - org.springframework.web.reactive.function.client.WebClientResponseException.TooManyRequests
+          - org.springframework.web.reactive.function.client.WebClientResponseException.InternalServerError
+          - org.springframework.web.reactive.function.client.WebClientResponseException.NotImplemented
+          - org.springframework.web.reactive.function.client.WebClientResponseException.BadGateway
+          - org.springframework.web.reactive.function.client.WebClientResponseException.ServiceUnavailable
+          - org.springframework.web.reactive.function.client.WebClientResponseException.GatewayTimeout
+  circuitbreaker:
+    instances:
+      customCircuitBreaker:
+        failure-rate-threshold: 75
+        sliding-window-size: 4
+        wait-duration-in-open-state: 10s
+        sliding-window-type: COUNT_BASED
