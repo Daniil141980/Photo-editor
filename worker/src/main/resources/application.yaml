@@ -1,0 +1,20 @@
+spring:
+  kafka:
+    listener.ack-mode: manual
+    bootstrap-servers:
+      - localhost:9092
+      - localhost:9093
+      - localhost:9094
+    properties:
+      security.protocol: SASL_PLAINTEXT
+      sasl.mechanism: PLAIN
+      sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";
+
+app:
+  images:
+    wip:
+      topic: images.wip
+      partitions: 1
+      group-id: group.images.wip
+    done:
+      topic: images.done

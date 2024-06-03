@@ -6,3 +6,5 @@ databaseChangeLog:
       file: './2024/03/26-02-create-table-images.sql'
       relativeToChangelogFile: true
   - include:
+      file: './2024/04/13-01-create-table-requests.sql'
+      relativeToChangelogFile: true

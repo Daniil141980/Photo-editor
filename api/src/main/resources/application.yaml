@@ -13,7 +13,19 @@ spring:
   mvc:
     servlet:
       path: /api/v1
-
+  kafka:
+    listener.ack-mode: manual
+    bootstrap-servers:
+      - localhost:9092
+      - localhost:9093
+      - localhost:9094
+    properties:
+      security.protocol: SASL_PLAINTEXT
+      sasl.mechanism: PLAIN
+      sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";
+  docker:
+    compose:
+      enabled: true
 storage:
   url: http://localhost:9002
   port: 9002
@@ -28,3 +40,13 @@ jwt:
   issuer: daniil
 
 app:
+  images:
+    wip:
+      topic: images.wip
+      partitions: 1
+      replicas: 3
+    done:
+      topic: images.done
+      partitions: 1
+      replicas: 3
+      group-id: group.images.done
