@@ -23,7 +23,7 @@
         <liquibase.version>4.22.0</liquibase.version>
         <lombok.version>1.18.30</lombok.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <minio.version>8.5.8</minio.version>
+        <minio.version>8.3.4</minio.version>
         <jwt.version>0.9.1</jwt.version>
         <spring.doc.version>2.2.0</spring.doc.version>
         <checkstyle-maven-plugin.version>3.0.0</checkstyle-maven-plugin.version>

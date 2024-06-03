@@ -49,7 +49,7 @@ jobs:
           min-coverage-overall: 50
           min-coverage-changed-files: 50
           update-comment: true
-          title: "Jacoco Report"
+          title: "Jacoco Report Api"
   deploy:
     runs-on: ubuntu-latest
     needs: [ build, checkstyle, unit-tests ]

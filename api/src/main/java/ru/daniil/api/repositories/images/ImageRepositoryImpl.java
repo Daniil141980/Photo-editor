@@ -32,6 +32,15 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
+    public Boolean exist(UUID id) {
+        return jdbcClient.sql("select exists(select 1 from images where id = ?)")
+                .param(id)
+                .query(Boolean.class)
+                .single();
+
+    }
+
+    @Override
     public Optional<ImageEntity> get(UUID id) {
         return jdbcClient.sql("select * from images where id = ?")
                 .param(id)

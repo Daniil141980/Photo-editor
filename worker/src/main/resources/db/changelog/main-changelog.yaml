@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: './2024/05/01-05-create-table-processors.sql'
+      relativeToChangelogFile: true

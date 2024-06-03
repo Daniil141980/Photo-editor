@@ -7,12 +7,13 @@ import ru.daniil.api.domains.FileProcessingStatus;
 import ru.daniil.api.domains.FilterType;
 import ru.daniil.api.domains.RequestEntity;
 import ru.daniil.api.dto.kafka.ImageWipDto;
+import ru.daniil.api.dto.processorparams.ProcessorParams;
 import ru.daniil.api.exceptions.ConflictException;
 import ru.daniil.api.exceptions.NotFoundException;
 import ru.daniil.api.kafka.ImageWipProducer;
 import ru.daniil.api.repositories.requests.RequestRepository;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 @Service
@@ -23,7 +24,7 @@ public class RequestService {
     private final ImageWipProducer imageWipProducer;
 
     @Transactional
-    public UUID saveRequest(UUID imageId, List<FilterType> filters) {
+    public UUID saveRequest(UUID imageId, LinkedHashMap<FilterType, ProcessorParams> filters) {
         imageService.getImage(imageId);
         var requestId = requestRepository.save(
                 new RequestEntity(UUID.randomUUID(),
@@ -49,9 +50,16 @@ public class RequestService {
 
     @Transactional
     public void updateRequest(UUID requestId, UUID imageId) {
+        if (!imageService.existImage(imageId)) {
+            imageService.saveImage(imageId, getOldImageId(requestId));
+        }
         requestRepository.get(requestId).orElseThrow(() ->
                 new NotFoundException("Request with id:%s not found".formatted(requestId))
         );
         requestRepository.updateIdModifiedAndStatus(requestId, imageId, FileProcessingStatus.DONE);
+    }
+
+    public UUID getOldImageId(UUID requestId) {
+        return requestRepository.getOldImageId(requestId);
     }
 }

@@ -31,6 +31,20 @@ public class ImageService {
         );
     }
 
+    @Transactional
+    public void saveImage(UUID id, UUID oldImageId) {
+        var oldImage = imageRepository.get(oldImageId).orElseThrow(() ->
+                new NotFoundException("Image with id:%s not found".formatted(id))
+        );
+        imageRepository.save(
+                new ImageEntity(id,
+                        oldImage.filename(),
+                        storageService.getSize(id.toString()),
+                        oldImage.userId()
+                )
+        );
+    }
+
     public List<ImageEntity> getAllByUser() {
         return imageRepository.getByUserId(userService.loadCurrentUser().id());
     }
@@ -51,6 +65,10 @@ public class ImageService {
         checkRights(imageEntity);
         imageRepository.remove(id);
         storageService.remove(id.toString());
+    }
+
+    public Boolean existImage(UUID id) {
+        return imageRepository.exist(id);
     }
 
     void checkRights(ImageEntity imageEntity) {

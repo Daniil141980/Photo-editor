@@ -12,6 +12,8 @@ public interface ImageRepository {
 
     List<ImageEntity> getByUserId(Long userId);
 
+    Boolean exist(UUID id);
+
     Optional<ImageEntity> get(UUID id);
 
     void remove(UUID id);

@@ -13,5 +13,7 @@ public interface StorageService {
 
     Resource loadAsResource(String fileId);
 
+    Long getSize(String fileId);
+
     void remove(String fileId);
 }

@@ -31,12 +31,20 @@ public class RequestRepositoryImpl implements RequestRepository {
     }
 
     @Override
-    public RequestEntity updateIdModifiedAndStatus(UUID id,
-                                                   UUID imageModifiedId,
-                                                   FileProcessingStatus fileProcessingStatus) {
-        return jdbcClient.sql("update requests set image_modified_id = ?, status = ? where id = ? returning *")
+    public void updateIdModifiedAndStatus(UUID id,
+                                          UUID imageModifiedId,
+                                          FileProcessingStatus fileProcessingStatus) {
+        jdbcClient.sql("update requests set image_modified_id = ?, status = ? where id = ? returning *")
                 .params(imageModifiedId, fileProcessingStatus.name(), id)
                 .query(RequestEntity.class)
+                .single();
+    }
+
+    @Override
+    public UUID getOldImageId(UUID requestId) {
+        return jdbcClient.sql("select image_id from requests where id = ?")
+                .param(requestId)
+                .query(UUID.class)
                 .single();
     }
 }

@@ -13,7 +13,9 @@ public interface RequestRepository {
 
     Optional<RequestEntity> get(UUID id);
 
-    RequestEntity updateIdModifiedAndStatus(UUID id,
-                                            UUID imageModifiedId,
-                                            FileProcessingStatus fileProcessingStatus);
+    void updateIdModifiedAndStatus(UUID id,
+                                   UUID imageModifiedId,
+                                   FileProcessingStatus fileProcessingStatus);
+
+    UUID getOldImageId(UUID requestId);
 }
