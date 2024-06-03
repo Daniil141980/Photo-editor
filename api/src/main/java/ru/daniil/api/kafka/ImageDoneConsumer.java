@@ -2,6 +2,7 @@ package ru.daniil.api.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.PSQLException;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
@@ -9,6 +10,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 import ru.daniil.api.dto.kafka.ImageDoneDto;
+import ru.daniil.api.exceptions.NotFoundException;
 import ru.daniil.api.services.RequestService;
 
 import java.net.SocketTimeoutException;
@@ -31,24 +33,10 @@ public class ImageDoneConsumer {
             backoff = @Backoff(value = 3000L),
             attempts = "5",
             autoCreateTopics = "false",
-            include = SocketTimeoutException.class, exclude = NullPointerException.class)
+            include = {SocketTimeoutException.class, PSQLException.class},
+            exclude = {NullPointerException.class, NotFoundException.class})
     public void consume(ImageDoneDto imageDoneDto, Acknowledgment acknowledgment) {
-        try {
-            requestService.updateRequest(imageDoneDto.requestId(), imageDoneDto.imageId());
-            acknowledgment.acknowledge();
-        } catch (Exception e) {
-            log.error("Failed to consume", e);
-        }
-    }
-
-
-    @KafkaHandler(isDefault = true)
-    @RetryableTopic(
-            backoff = @Backoff(value = 3000L),
-            attempts = "5",
-            autoCreateTopics = "false",
-            include = SocketTimeoutException.class, exclude = NullPointerException.class)
-    public void unknown(Object object) {
-        log.warn("Unknown type received: {}", object);
+        requestService.updateRequest(imageDoneDto.requestId(), imageDoneDto.imageId());
+        acknowledgment.acknowledge();
     }
 }
