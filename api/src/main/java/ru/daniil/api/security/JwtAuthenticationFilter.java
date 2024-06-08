@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         var cookieHeader = request.getHeader(HttpHeaders.COOKIE);
-        if (cookieHeader == null || !cookieHeader.startsWith(COOKIE_HEADER_NAME)) {
+        if (cookieHeader == null || !cookieHeader.contains(COOKIE_HEADER_NAME)) {
             filterChain.doFilter(request, response);
             return;
         }

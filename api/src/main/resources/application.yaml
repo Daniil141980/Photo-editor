@@ -50,3 +50,23 @@ app:
       partitions: 2
       replicas: 3
       group-id: group.images.done
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health, prometheus
+      base-path:  /actuator
+      path-mapping:
+        prometheus: /metrics
+  endpoint:
+    health:
+      show-details: always
+  health:
+    db:
+      enabled: true
+    livenessstate:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
