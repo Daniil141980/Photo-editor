@@ -129,7 +129,7 @@ services:
       - shared-network
 
   grafana:
-    image: grafana/grafana-oss
+    build: ../config/grafana
     ports:
       - "3000:3000"
     environment:

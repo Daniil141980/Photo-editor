@@ -55,13 +55,18 @@ management:
   endpoints:
     web:
       exposure:
-        include: info, health, prometheus
+        include: prometheus, metrics, info, health, shutdown, beans
       base-path:  /actuator
       path-mapping:
         prometheus: /metrics
   endpoint:
     health:
       show-details: always
+      show-components: always
+      probes:
+        enabled: true
+    shutdown:
+      enabled: true
   health:
     db:
       enabled: true
@@ -70,3 +75,10 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
