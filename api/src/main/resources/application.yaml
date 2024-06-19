@@ -50,3 +50,35 @@ app:
       partitions: 2
       replicas: 3
       group-id: group.images.done
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, metrics, info, health, shutdown, beans
+      base-path:  /actuator
+      path-mapping:
+        prometheus: /metrics
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+    shutdown:
+      enabled: true
+  health:
+    db:
+      enabled: true
+    livenessstate:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

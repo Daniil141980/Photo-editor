@@ -1,5 +1,6 @@
 package ru.daniil.api.controllers;
 
+import io.micrometer.core.annotation.Counted;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -53,6 +54,7 @@ public class ImageController {
                             schema = @Schema(implementation = SuccessResponseDto.class)
                     ))
     })
+    @Counted(value = "processed_messages")
     @PostMapping(value = "/image",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
